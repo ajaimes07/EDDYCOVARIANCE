@@ -1,0 +1,51 @@
+% Input Matrix: Data=[a;b;e;hhh;m;n;o;r;s;ccc;ggg;iii;ooo;u;v;w;x];
+
+% 1. a=ts_mean
+% 2. b=press_avg
+% 3. e=reshape(rh_hmp_mean,mperday,nday);
+% 4. hhh=reshape(Rn_nr_Corrected,mperday,nday); 
+% 5. m=reshape(NetRS,mperday,nday); 
+% 6. n=reshape(NetRL,mperday,nday);
+% 7. o=reshape(par_avg,mperday,nday);
+% 8. r=reshape(wind_speed,mperday,nday); 
+% 9. s=reshape(wind_dir,mperday,nday);
+% 10.ccc=reshape(NEE,mperday,nday);
+% 11.ggg=reshape(H,mperday,nday);
+% 12.iii=reshape(LE,mperday,nday);
+% 13.ooo=reshape(VPD,mperday,nday);
+% 14.u=reshape(hfp01_1_avg,mperday,nday);
+% 15.v=reshape(hfp01_2_avg,mperday,nday);
+% 16.w=reshape(hfp01_3_avg,mperday,nday); 
+% 17.x=reshape(hfp01_4_avg,mperday,nday);
+
+% Extracting Gapfilled values
+
+
+n_variables  = 58;
+time_diurnal = 48;
+% days         = 365*3;
+days         = 365*1;
+
+GF_Data = zeros(n_variables, time_diurnal*days);
+
+for i = 1:n_variables
+   
+    temp = Data_Res((i-1)*time_diurnal+1:(i-1)*time_diurnal+time_diurnal,:);
+    GF_Data(i,:) = reshape(temp,1,time_diurnal*days);
+    
+end
+
+GF_Data = GF_Data';
+
+% save Met GF_Data -'ASCII'
+% save HFP01 GF_Data -'ASCII'
+% save Soil_opDCT GF_Data -'ASCII'
+% save LWS_opDCT GF_Data -'ASCII'
+% save VPD_opDCT GF_Data -'ASCII'
+% save Wavelenght_opDCT GF_Data -'ASCII'
+% save AmerifluxTable GF_Data -'ASCII'
+% save Fluxes GF_Data -'ASCII'
+% save Technical GF_Data -'ASCII' % Panel temperature and voltage
+% save NetRadiation_Corrected GF_Data % Net radiation corrected using net radiation from santa rita
+% save CO2Fluxes GF_Data
+save GapfilledMicrometTable2013 GF_Data
