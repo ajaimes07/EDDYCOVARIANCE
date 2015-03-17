@@ -1,0 +1,60 @@
+% Aline 032512
+% Mientras este codigo no sea llamado por una funcion, escribe las
+% siguientes instrucciones para ejecutarlo:
+% 
+%   clear all
+%   close all
+%  load ECTM_2010.dat; Data= ECTM_2010;
+%  load ECTM_2011.dat; Data= ECTM_2011;
+%  load ECTM_2012.mat; Data= ECTM_2012;
+
+                AvTable = myAveragedTable(Data)
+% el archivo ectm2012 esta guardado en el mismo directorio y es actualizado
+% desde I:\EddyCovarianceData\Soil_data\ECTM_workingtable.xls
+% ectm2012.dat es un archivo con NaNs en lugar de flags
+
+% El archivo ascii final es ECTM_AV
+
+% crear una matrix N x 2 con DOY y Time
+%mat3=[aux mat3)
+
+%function AvTable = myAveragedTable(filename)
+%  function AvTable = myAveragedTable(Data)
+%function AvTable = myAveragedTable(Data_t)
+
+%load(filename); % change for another table if needed
+
+[M N] = size(Data);
+
+AvTable = [];
+
+%m = 1; kk = 1; block_size = 30;
+m = 1; kk = 1; block_size = 48;
+while m < M
+    
+    for i = 1:N
+        AvTable(kk,i) = 0;
+        count = 0;
+        for j = m:m+block_size - 1
+            
+            if ~isnan(Data(j,i))
+                AvTable(kk,i) =  AvTable(kk,i) + Data(j,i);
+                count = count + 1;
+            end
+            
+        end
+        AvTable(kk,i) =  AvTable(kk,i)/count;
+        
+    end
+    
+    kk = kk+1;
+    
+%     m = m+30;
+     m = m+48;
+    if m + block_size > M
+        block_size = M - m + 1;
+    end
+
+end
+
+% end
