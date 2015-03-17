@@ -1,0 +1,34 @@
+
+function [Summonth_A]= MonthlyData(A)
+
+% years=size(A,1)/(365*48); % Estimate number of years
+years=3; % Estimate number of years
+ max_A=zeros(years*12, size (A,2));   % declare a matrix 
+ min_A=zeros(years*12, size (A,2)); % declare a matrix 
+ Summonth_A=zeros(years*12, size (A,2));% declare a matrix 
+ mean_A=zeros(years*12, size (A,2));% declare a matrix 
+  std_A=zeros(years*12, size (A,2));% declare a matrix
+ i=1; j=1440; % 48 measurements * 30 days count
+jump=48*30;
+for k=1:size(Summonth_A,1)  % first 48 values
+    temp=A(i:j,:);
+        Summonth_A(k,:)=sum(temp); 
+        mean_A(k,:)=mean(temp);
+        max_A(k,:)=max(temp);
+        min_A(k,:)=min(temp);
+        std_A(k,:)=std(temp);
+     
+    i=i+jump;
+    j=j+jump;
+end
+% end
+
+
+ save Monthly_MaximumValues max_A -'ascii'
+ save Monthly_MinimumValues min_A -'ascii'
+ save Monthly_SumValues Summonth_A -'ascii'
+ save Monthly_MeanValues mean_A -'ascii'
+ save Monthly_STDValues std_A -'ascii'
+% 
+ disp('The files Daily_MaximumValues, Daily_MinimumValues, Daily_MeanValues has beed saved')
+ disp('Go to:C:\Users\UTEP\Documents\MATLAB\VISFLUX\VisualizingAllYrs ')
