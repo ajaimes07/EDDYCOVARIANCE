@@ -91,9 +91,7 @@ for i=1:N;
           if rh_hmp_mean(i)==9999; rh_hmp_mean(i)=NaN; end
           if lws_1(i)==9999; lws_1(i)=NaN; end
           if lws_2(i)==9999; lws_2(i)=NaN; end
-%           if lws_1(i)>=500; lws_1(i)=300; end
           if lws_1(i)<=0; lws_1(i)=300; end
-%           if lws_2(i)>=500; lws_2(i)=300; end
           if lws_2(i)<=0; lws_2(i)=300; end
           if wind_speed(i)==9999;wind_speed(i)=NaN; end
           if wind_dir(i)==9999;wind_dir(i)=NaN; end
@@ -141,34 +139,20 @@ for i=1:N;
           if TA(i)==9999;TA(i)=NaN; end
           if WD(i)==9999;WD(i)=NaN; end
           if WS(i)==9999;WS(i)=NaN; end
-        %            if NEE(i)>=2;NEE(i)=0.1; end
-%            if NEE(i)<=-4;NEE(i)=-0.1; end
 %           if FC(i)==-9999;FC(i)=NaN; end
 %           if H(i)==-9999;H(i)=NaN; end
-%           if H(i)<=-100;H(i)=0; end
 %           if SH(i)==-9999;SH(i)=NaN; end
           if LE(i)==-9999;LE(i)=NaN; end
-%           if LE(i)>=400;LE(i)=.1; end
-%           if LE(i)<=000;LE(i)=.1; end
 %           if SLE(i)==-9999;SLE(i)=NaN; end
-          if RH(i)==9999;RH(i)=NaN; end
           if PRESS(i)==9999;PRESS(i)=NaN; end
 %           if CO2(i)==9999;CO2(i)=NaN; end
           if VPD(i)==9999;VPD(i)=NaN; end
           if VPD(i)<=-0.1;VPD(i)=0; end
-%           if VPD(i)==9;VPD(i)=6; end
           if H2O(i)==9999;H2O(i)=NaN; end
-%          if RE(i)>=6;RE(i)=.02; end
            if ZL(i)==9999;ZL(i)=NaN; end
 %           if nep(i)==9999;nep(i)=NaN;end 
-%           if par_avg(i)<=.1;nep(i)=-.05;end 
-%           if nep(i)>=.1;nep(i)=.01; end
-%           if nep(i)<=-.1;nep(i)=-.02; end
 %           if gep(i)==9999;gep(i)=NaN;end   
-%           if gep(i)>=.4;gep(i)=.01; end   
-%           if gep(i)<=0;gep(i)=0; end   
 %           if reco(i)==9999;reco(i)=NaN; end
-%           if reco(i)>=.15;reco(i)=.07; end
 %           if reco(i)<=0;reco(i)=0; end
 end
  
