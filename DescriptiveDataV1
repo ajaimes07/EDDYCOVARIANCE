@@ -1,0 +1,739 @@
+% Visualizing All years data
+% Path: C:\Users\UTEP\Documents\MATLAB\VISFLUX\VisualizingAllYrs
+clear all
+close all
+
+% ===================================================
+%  This new version includes NEE, GPP and R [umol/m^2/s], on column NEE=53,
+%  GPP=63, R=62
+% generated, after :
+% 1. QualityAssuranceV1.m
+% 2. Jena Tool to gap fill and partitioning
+
+C=load('091913_AllYears_filtered_GapfilledwithTAir.dat');   
+D=load('GapFilledData.dat'); % Here the fluxes are saved as: 
+% NEE=4; GPP=5; R=6; H=7; LE=8;
+
+% added on 05/05/2014
+% load GapfilledMicrometTable2013.mat
+% E=GapfilledMicrometTable2013;
+
+
+% ================ Despiking ======================
+% % % data=load ('041513AllYear_DataGapFilled.dat'); 
+% % data=load ('050313AllYear_DataGapFilledInpaintingTEST2.dat'); 
+% data=load ('061813AllYear_DataGapFilled.dat');
+% % threshold=load('threshold.dat');
+% [M N] = size(data);
+% n = 6; stdr = 3*ones(N,1); 
+% [dataOut] = windowaveMatrix(data,n,stdr);
+% C=dataOut;
+% ============================READING VARIABLES =======================
+% =========   Timestamp  ============
+YEAR=C(:,1);	DOY=C(:,2);	TIME=C(:,3);	
+% ========  Metereological  ===========
+ts_mean=C(:,4);	press_avg=C(:,5);
+atm_press_mean=C(:,6);	t_hmp_mean=C(:,7);	rh_hmp_mean=C(:,8);	lws_1=C(:,9);
+lws_2=C(:,10);	precip_tot=C(:,11); wind_speed=C(:,12);	wind_dir=C(:,13);
+
+UST=C(:,46);TA=C(:,47);	WD=C(:,48);	WS=C(:,49);RH=C(:,50); 
+PRESS=C(:,51); VPD=C(:,52);	
+% ========  Technical  ===========
+panel_temp_avg=C(:,14); batt_volt_avg=C(:,15);
+% ======== Energy  ===========
+NetSW=C(:,16); NetLW=C(:,17); UpTot=C(:,18); DownTot=C(:,19);
+Rn_nr_CNR1=C(:,20);	Rn_nr_CNR2=C(:,21);	Rn_nr_CNR4=C(:,22);
+Rn_nr_Corrected=C(:,23);	albedo_Avg=C(:,24);	par_avg=C(:,25);
+% ======== SOIL  ===========
+hfp01_1=C(:,26);hfp01_2=C(:,27);hfp01_3=C(:,28);hfp01_4=C(:,29);
+vwc1=C(:,30);	vwc2=C(:,31);	vwc3=C(:,32);	vwc4=C(:,33);
+vwc5=C(:,34);	vwc6=C(:,35);	vwc7=C(:,36);	vwc8=C(:,37);	
+t1=C(:,38); t2=C(:,39); t3=C(:,40);	t4=C(:,41);	
+t5=C(:,42);	t6=C(:,43);	t7=C(:,44); t8=C(:,45);	
+% ======== FLUXES  ===========
+% NEE=C(:,53);	FC=C(:,54);	SFC=C(:,55);H=C(:,56); 
+SH=C(:,57);	
+% LE=C(:,58);	SLE=C(:,59); 
+CO2=C(:,60); H2O=C(:,61); 
+% RE=C(:,62);
+% GPP=C(:,63); 
+ZL=C(:,64);
+
+NEE=D(:,4); GPP=D(:,5); RE=D(:,6); LE=D(:,8); H=D(:,7); 
+% ======== Constants  ===========
+nday=(365*3);
+mperday=48;
+N=length(DOY);
+% ======== Declaring variables  ===========
+a=[];b=[];zz=[];d=[]; e=[];f=[];g=[];hhh=[];m=[];n=[];
+o=[];p=[];q=[];r=[];s=[];tt=[];u=[];v=[];w=[];x=[];
+y=[];z=[];aa=[];bb=[];cc=[];dd=[];ff=[];gg=[];hh=[];mm=[];
+nn=[];oo=[];pp=[];qq=[];rr=[]; ss=[]; tt=[];pr=[];aaa=[];bbb=[];
+ccc=[];ddd=[]; eee=[];fff=[];ggg=[];hhhh=[];iii=[];jjj=[]; kkk=[];lll=[];
+mmm=[];nnn=[];ooo=[];ppp=[]; qqq=[]; rrr=[];sss=[]; ttt=[];hhh=[]; uuu=[];
+www=[]; xxx=[]; yyy=[];zzz=[];
+
+NEP=[]; GEP=[];RECO=[];
+
+a(N)=NaN; b(N)=NaN; zz(N)=NaN; d(N)=NaN; e(N)= NaN; f(N)=NaN; g(N)=NaN; hhh(N)=NaN; m(N)= NaN;n(N)=NaN; 
+o(N)=NaN; p(N)=NaN; q(N)=NaN; r(N)=NaN; s(N)=NaN; tt(N)=NaN; u(N)= NaN; v(N)=NaN;w(N)=NaN; x(N)=NaN; 
+y(N)=NaN; z(N)=NaN; aa(N)=NaN; bb(N)=NaN; cc(N)=NaN; dd(N)=NaN;ff(N)=NaN;gg(N)=NaN;hh(N)=NaN;mm(N)=NaN; 
+nn(N)=NaN; oo(N)=NaN; pp(N)=NaN; qq(N)=NaN;rr(N)=NaN;ss(N)=NaN; tt(N)=NaN; pr(N)=NaN;aaa(N) = NaN;bbb(N)=NaN;
+ccc(N) = NaN;ddd(N) = NaN; eee(N) = NaN;fff(N) = NaN; ggg(N) = NaN;hhhh(N) = NaN;iii(N) = NaN;jjj(N) = NaN; kkk(N) = NaN;lll(N) = NaN;
+mmm(N) = NaN;nnn(N) = NaN; ooo(N) = NaN; ppp(N) = NaN; qqq(N) = NaN; rrr(N) = NaN; sss(N) = NaN; ttt(N) = NaN; hhh(N) = NaN; uuu(N) = NaN; 
+www(N) = NaN; xxx(N) = NaN; yyy(N) = NaN; zzz(N) = NaN;
+
+for i=1:N; 
+          if ts_mean(i)==9999; ts_mean(i)=NaN; end
+          if press_avg(i)==9999;press_avg(i)=NaN; end
+          if atm_press_mean(i)==9999;atm_press_mean(i)=NaN; end
+          if t_hmp_mean(i)==9999;t_hmp_mean(i)=NaN; end
+          if rh_hmp_mean(i)==9999; rh_hmp_mean(i)=NaN; end
+          if lws_1(i)==9999; lws_1(i)=NaN; end
+          if lws_2(i)==9999; lws_2(i)=NaN; end
+%           if lws_1(i)>=500; lws_1(i)=300; end
+          if lws_1(i)<=0; lws_1(i)=300; end
+%           if lws_2(i)>=500; lws_2(i)=300; end
+          if lws_2(i)<=0; lws_2(i)=300; end
+          if wind_speed(i)==9999;wind_speed(i)=NaN; end
+          if wind_dir(i)==9999;wind_dir(i)=NaN; end
+          if panel_temp_avg(i)==9999;panel_temp_avg(i)=NaN; end
+          if precip_tot(i)==9999;precip_tot(i)=NaN; end
+          if batt_volt_avg(i)==9999;batt_volt_avg(i)=NaN; end
+          if NetSW(i)==9999;NetSW(i)=NaN; end
+          if NetLW(i)==9999;NetLW(i)=NaN; end
+          if UpTot(i)==9999;UpTot(i)=NaN; end
+          if DownTot(i)==9999;DownTot(i)=NaN; end
+          if Rn_nr_Corrected(i)==9999;Rn_nr_Corrected(i)=NaN; end
+          if albedo_Avg(i)==9999;albedo_Avg(i)=NaN; end          
+          if par_avg(i)==9999;par_avg(i)=NaN; end
+          if par_avg(i)>=3000;par_avg(i)=2500; end
+          if par_avg(i)<=0;par_avg(i)=0; end
+          if hfp01_1(i)==9999;hfp01_1(i)=NaN; end
+          if hfp01_2(i)==9999;hfp01_2(i)=NaN; end
+          if hfp01_3(i)==9999; hfp01_3(i)=NaN; end
+          if hfp01_4(i)==9999; hfp01_4(i)=NaN; end
+          if vwc1(i)==9999;vwc1(i)=NaN; end
+          if vwc1(i)<=0;vwc1(i)=0; end
+          if vwc2(i)==9999;vwc2(i)=NaN; end
+          if vwc2(i)<=0;vwc2(i)=0; end
+          if vwc3(i)==9999;vwc3(i)=NaN; end
+          if vwc3(i)<=0;vwc3(i)=0; end
+          if vwc4(i)==9999;vwc4(i)=NaN; end
+          if vwc4(i)<=0;vwc4(i)=0; end
+          if vwc5(i)==9999;vwc5(i)=NaN; end
+          if vwc5(i)<=0;vwc5(i)=0; end
+          if vwc6(i)==9999;vwc6(i)=NaN; end
+          if vwc6(i)<=0;vwc6(i)=0; end
+          if vwc7(i)==9999;vwc7(i)=NaN; end
+          if vwc7(i)<=0;vwc7(i)=0; end
+          if vwc8(i)==9999;vwc8(i)=NaN; end
+          if vwc8(i)<=0;vwc8(i)=0; end
+          if t1(i)==9999;t1(i)=NaN; end
+          if t2(i)==9999;t2(i)=NaN; end
+          if t3(i)==9999;t3(i)=NaN; end
+          if t4(i)==9999;t4(i)=NaN; end
+          if t5(i)==9999;t5(i)=NaN; end
+          if t6(i)==9999;t6(i)=NaN; end
+          if t7(i)==9999;t7(i)=NaN; end
+          if t8(i)==9999;t8(i)=NaN; end
+          if UST(i)==9999;UST(i)=NaN; end
+          if TA(i)==9999;TA(i)=NaN; end
+          if WD(i)==9999;WD(i)=NaN; end
+          if WS(i)==9999;WS(i)=NaN; end
+        %            if NEE(i)>=2;NEE(i)=0.1; end
+%            if NEE(i)<=-4;NEE(i)=-0.1; end
+%           if FC(i)==-9999;FC(i)=NaN; end
+%           if H(i)==-9999;H(i)=NaN; end
+%           if H(i)<=-100;H(i)=0; end
+%           if SH(i)==-9999;SH(i)=NaN; end
+          if LE(i)==-9999;LE(i)=NaN; end
+%           if LE(i)>=400;LE(i)=.1; end
+%           if LE(i)<=000;LE(i)=.1; end
+%           if SLE(i)==-9999;SLE(i)=NaN; end
+          if RH(i)==9999;RH(i)=NaN; end
+          if PRESS(i)==9999;PRESS(i)=NaN; end
+%           if CO2(i)==9999;CO2(i)=NaN; end
+          if VPD(i)==9999;VPD(i)=NaN; end
+          if VPD(i)<=-0.1;VPD(i)=0; end
+%           if VPD(i)==9;VPD(i)=6; end
+          if H2O(i)==9999;H2O(i)=NaN; end
+%          if RE(i)>=6;RE(i)=.02; end
+           if ZL(i)==9999;ZL(i)=NaN; end
+%           if nep(i)==9999;nep(i)=NaN;end 
+%           if par_avg(i)<=.1;nep(i)=-.05;end 
+%           if nep(i)>=.1;nep(i)=.01; end
+%           if nep(i)<=-.1;nep(i)=-.02; end
+%           if gep(i)==9999;gep(i)=NaN;end   
+%           if gep(i)>=.4;gep(i)=.01; end   
+%           if gep(i)<=0;gep(i)=0; end   
+%           if reco(i)==9999;reco(i)=NaN; end
+%           if reco(i)>=.15;reco(i)=.07; end
+%           if reco(i)<=0;reco(i)=0; end
+end
+ 
+
+% % CLEANING FLUXES (ONLY NEED IT TO CALCULATE BUDGETS)
+%            for i=1:N;
+%             if NEE(i)==-9999;       NEE(i)=NaN;         end 
+%             if RE(i)==-9999;        RE(i)=NaN;          end
+%             if GPP(i)==-9999;       GPP(i)=NaN;         end
+%             if par_avg(i)<=10;      RE=NEE(i);          end % Nightime NEE = only respiration
+%            end
+%             
+%            for i=1:N;
+%             if par_avg(i)<=10;      GPP=NEE(i)-RE(i);   end    % GPP = NEE-RE
+%             if par_avg(i)>=10;      GPP(i)=0.1;         end    % GPP equals 0 at nightime
+%            end       
+
+% ============ Calculate ET
+% From lambdaET W/M^2 to ET mm, conversion factor = 2454000
+ET=[]
+for i=1:N
+    ET(i)=LE(i)*2454000; % Evapotranspiration
+    ETa(i)=ET(i)*vwc1(i);
+    
+end
+ET=ET';
+ETa=ETa';
+
+% Timestamp
+time = 0:0.5:23.5;
+doy = 1:nday;
+[D t] = meshgrid (doy,time);
+% depth=(1:1:20);
+% [Days Depth]=meshgrid(depth,doy);
+
+% Use handle graphics:
+% days and time of the day are used.
+days = ['001';'200';'300';'365'];
+timeofday=[0:6:24];
+%    
+
+% ============================= WATER ==================
+ et=reshape(ET,mperday,nday); 
+ eta=reshape(ETa,mperday,nday);
+ ooo=reshape(VPD,mperday,nday);
+% 
+% Inpaiting
+% 
+% Data=[a;b];
+% save Technical Data
+
+ % ====== Figures =====
+ 
+% NEE=reshape(nep,mperday,nday); 
+NEP=(NEE*-1);
+NEP=(NEE);
+% GEP=reshape(gep,mperday,nday);
+% RECO=reshape(reco,mperday,nday); 
+
+% figure
+% set(gcf,'NumberTitle', 'off', 'Name', 'Water')
+% subplot (4,1,1)
+% pcolor(D,t,et); shading interp; hold on; 
+% [c,h] = contour(D,t,et,3,'k-','linewidth',0.2); hold on; colormap jet  
+% hold on; set(gca,'FontSize',16); Z=colorbar; 
+% % caxis([-25 50])
+% set(get(Z,'ylabel'),'string','ET [mm]','Fontsize',14) 
+% 
+% subplot (4,1,2)
+% pcolor(D,t,eta); shading interp; hold on; 
+% [c,h] = contour(D,t,eta,3,'k-','linewidth',0.2); hold on; colormap jet  
+% hold on; set(gca,'FontSize',16); Z=colorbar; 
+% % caxis([-25 50])
+% set(get(Z,'ylabel'),'string','Actual ET [mm]','Fontsize',14)
+% 
+% subplot (4,1,3)
+% pcolor(D,t,ooo); shading interp; hold on; 
+% [c,h] = contour(D,t,ooo,3,'k-','linewidth',0.2); hold on; colormap jet  
+% hold on; set(gca,'FontSize',16); Z=colorbar; 
+% % caxis([-25 50])
+% set(get(Z,'ylabel'),'string','Actual ET [mm]','Fontsize',14)
+
+subplot(3,1,2);pcolor(D,t,GEP);shading flat; hold on;
+[c,h] = contour(D,t,GEP,'linewidth',1); hold on;  colormap jet
+Z=colorbar;  
+%  caxis([0 .6]);
+set(get(Z,'ylabel'),'string','GEP [gC m^2/s]','Fontsize',14) % sets the ylabel property of the handle t.
+set(gca,'xtick',[],'ytick',[timeofday])
+   
+subplot(3,1,3); 
+pcolor(D,t,RECO);shading flat; hold on; Z=colorbar;  
+% caxis([0 0.2]);
+[c,h] = contour(D,t,RECO,'linewidth',1); hold on;  colormap jet
+set(get(Z,'ylabel'),'string','Reco[gC m^2/s]','Fontsize',10) % sets the ylabel property of the handle t.
+set(gca,'XTickLabel',days) 
+set(gca,'YTickLabel',timeofday) 
+ylabel('Time of day','fontsize',14,'fontweight','b','color','k');
+xlabel('Day of year','fontsize',14,'fontweight','b','color','k');
+
+
+%  
+ 
+ % Metereological
+% a=reshape(ts_mean,mperday,nday); 
+a=reshape(TA,mperday,nday); 
+b=reshape(press_avg,mperday,nday);
+zz=reshape(atm_press_mean,mperday,nday); 
+% d=reshape(t_hmp_mean,mperday,nday); 
+d=reshape(RH,mperday,nday); 
+r=reshape(wind_speed,mperday,nday); 
+s=reshape(wind_dir,mperday,nday); 
+
+figure
+set(gcf,'NumberTitle', 'off', 'Name', 'Metereology')
+subplot(4,1,1);pcolor(D,t,a); shading interp; hold on; 
+[c,h] = contour(D,t,a,'linewidth',1); hold on;   colormap gray
+hold on; Z=colorbar; caxis([-25 50])
+set(get(Z,'ylabel'),'string','AT [C]','Fontsize',14) 
+% set(gca,'xtick',days,'ytick',timeofday)
+
+subplot(4,1,2);
+pcolor(D,t,b); shading flat; hold on;
+[c,h] = contour(D,t,b,'linewidth',1); hold on; colormap jet
+hold on;  Z=colorbar; caxis([85 87])
+set(get(Z,'ylabel'),'string','Atm Press[kPa]','Fontsize',14) % sets the ylabel property of the handle t.
+set(gca,'xtick',[],'ytick',[timeofday])
+
+subplot(4,1,3); 
+pcolor(D,t,s); shading flat; hold on;
+[c,h] = contour(D,t,s,5,'linewidth',1); hold on; colormap jet
+hold on;  Z=colorbar; caxis([0 360])
+set(get(Z,'ylabel'),'string','WD [Degrees]','Fontsize',14) % sets the ylabel property of the handle t.
+% set(gca,'YTickLabel',timeofday) 
+
+subplot(4,1,4);
+pcolor(D,t,r); shading flat; hold on;
+[c,h] = contour(D,t,r,'linewidth',1);  colormap jet
+hold on;   Z=colorbar; caxis([0 15])
+set(get(Z,'ylabel'),'string','WS [m/s]','Fontsize',14) % sets the ylabel property of the handle t.
+xlabel('days','fontsize',14,'fontweight','b','color','k');
+
+% 
+% e=reshape(rh_hmp_mean,mperday,nday);
+e=reshape(RH,mperday,nday);
+f=reshape(lws_1,mperday,nday);
+g=reshape(lws_2,mperday,nday); 
+q=reshape(panel_temp_avg,mperday,nday); 
+kkk=reshape(WS,mperday,nday);
+lll=reshape(RH,mperday,nday);
+mmm=reshape(PRESS,mperday,nday);
+
+
+figure
+subplot(4,1,1);
+pcolor(D,t,ooo); shading flat; hold on;
+[c,h] = contour(D,t,ooo,5,'k-','linewidth',0.5);   colormap jet
+hold on;  Z=colorbar; caxis([0 7 ])
+set(get(Z,'ylabel'),'string','VPD[]','Fontsize',14) % sets the ylabel property of the handle t.
+% set(gca,'xtick',days,'ytick',timeofday)
+
+subplot(4,1,2);
+pcolor(D,t,e); shading flat; hold on;
+[c,h] = contour(D,t,e,5,'k-','linewidth',0.5);   colormap jet
+hold on;  Z=colorbar; caxis([0 100])
+set(get(Z,'ylabel'),'string','Rel Hum[%]','Fontsize',14) % sets the ylabel property of the handle t.
+% set(gca,'xtick',[],'ytick',[timeofday])
+% 
+% subplot(4,1,3);
+% pcolor(D,t,f); shading flat; hold on;
+% [c,h] = contour(D,t,f,'linewidth',1);   colormap jet
+% hold on;  Z=colorbar; caxis([0 1000])
+% % caxis([85 87])
+% set(get(Z,'ylabel'),'string','Leaf Wetness Sensor','Fontsize',14) % sets the ylabel property of the handle t.
+% 
+% subplot(4,1,4); 
+% pcolor(D,t,g); shading flat; hold on;
+% [c,h] = contour(D,t,g,'linewidth',1);   colormap jet
+% hold on;  Z=colorbar; caxis([0 1000])
+% set(get(Z,'ylabel'),'string','Leaf Wetness Sensor','Fontsize',14) % sets the ylabel property of the handle t.
+% set(gca,'xtick',[],'ytick',[timeofday])
+% 
+
+% % Energy
+hhh=reshape(Rn_nr_Corrected,mperday,nday); 
+m=reshape(NetSW,mperday,nday); 
+n=reshape(NetLW,mperday,nday);
+o=reshape(par_avg,mperday,nday);
+eee=reshape(UpTot,mperday,nday);
+uuu=reshape(DownTot,mperday,nday);
+
+%  figure
+set(gcf,'NumberTitle', 'off', 'Name', 'Energy')
+subplot(4,1,3);pcolor(D,t,hhh); shading interp; hold on;
+[c,h] = contour(D,t,hhh,5,'k-','linewidth',0.5); hold on; colormap jet
+Z=colorbar; caxis([-200 1000])
+set(get(Z,'ylabel'),'string','Net Radiation [W m^2/s]','Fontsize',14) % sets the ylabel property of the handle t.
+set(gca,'xtick',[],'ytick',[timeofday])
+
+% subplot(4,1,2);pcolor(D,t,m); shading interp; hold on; 
+% % [c,h] = contour(D,t,m,'k--'); hold on; 
+% Z=colorbar; caxis('auto')
+% set(get(Z,'ylabel'),'string','Solar Radiation  [NetRs W m^2/s]','Fontsize',14) % sets the ylabel property of the handle t.
+% set(gca,'xtick',[],'ytick',[timeofday])
+% 
+% subplot(4,1,3);pcolor(D,t,n); shading interp; hold on; 
+% % [c,h] = contour(D,t,n,'k--'); hold on; 
+% Z=colorbar; caxis('auto')
+% set(get(Z,'ylabel'),'string','Heat [NetLW W m^2/s]','Fontsize',14) % sets the ylabel property of the handle t.
+% set(gca,'xtick',[],'ytick',[timeofday]);
+% 
+subplot(4,1,4);pcolor(D,t,o); shading interp; hold on; 
+[c,h] = contour(D,t,o,5,'k-','linewidth',0.5); hold on; colormap jet
+Z=colorbar; caxis([0 4000])
+set(get(Z,'ylabel'),'string','PAR[umol/m/s]','Fontsize',14) % sets the ylabel property of the handle t.
+set(gca,'xtick',[],'ytick',[timeofday]);
+xlabel('Day of year','fontsize',14,'fontweight','b','color','k');
+ylabel('Time of day','fontsize',14,'fontweight','b','color','k');
+
+
+% Soil
+u=reshape(hfp01_1,mperday,nday);
+v=reshape(hfp01_2,mperday,nday);
+w=reshape(hfp01_3,mperday,nday); 
+x=reshape(hfp01_4,mperday,nday); 
+
+% % ========= Soil Heat =============
+ figure
+ set(gcf,'NumberTitle', 'off', 'Name', 'Soil heat flux')
+ subplot(4,1,1);pcolor(D,t,u); shading flat; hold on; 
+[c,h] = contour(D,t,u); hold on;  colormap jet
+Z=colorbar; caxis('auto');
+set(get(Z,'ylabel'),'string','5cm under mesquite[W m^2/s]','Fontsize',14) % sets the ylabel property of the handle t.
+ set(gca,'xtick',[],'ytick',[timeofday])
+
+subplot(4,1,2);pcolor(D,t,v); shading flat;hold on;
+[c,h] = contour(D,t,v); hold on;  colormap jet
+Z=colorbar;  caxis('auto'); hold on
+set(get(Z,'ylabel'),'string','15cm under mesquite [W m^2/s]','Fontsize',14) % sets the ylabel property of the handle t.
+ set(gca,'xtick',[],'ytick',[timeofday])
+ 
+ 
+subplot(4,1,3);pcolor(D,t,w);shading flat; hold on;
+[c,h] = contour(D,t,w); hold on;  colormap jet
+Z=colorbar;  caxis('auto'); hold on;
+set(get(Z,'ylabel'),'string','5cm bare soil [W m^2/s]','Fontsize',14) % sets the ylabel property of the handle t.
+ set(gca,'xtick',[],'ytick',[timeofday])
+ 
+subplot(4,1,4);pcolor(D,t,x);shading flat; hold on;
+[c,h] = contour(D,t,x); hold on;  colormap jet
+Z=colorbar;  caxis('auto'); hold on
+set(get(Z,'ylabel'),'string','15cm bare soil [W m^2/s]','Fontsize',14) % sets the ylabel property of the handle t.
+set(gca,'XTickLabel',days) 
+set(gca,'YTickLabel',timeofday) 
+xlabel('Day of year','fontsize',14,'fontweight','b','color','k');
+ylabel('Time of day','fontsize',14,'fontweight','b','color','k')
+
+% % ========= under mesquite =============
+mm=reshape(t1,mperday,nday);    %T1 02 cm Under bush
+tt=reshape(t8,mperday,nday);    %T8 05cm Under Bush  
+nn=reshape(t2,mperday,nday);    %T2 10cm Under Bush
+oo=reshape(t3,mperday,nday);    %T3 20cm Under Bush
+
+
+aa=reshape(vwc1,mperday,nday);  %vwc1 02 cm Under bush 
+ll=reshape(vwc8,mperday,nday);  %vwc8 05cm Under Bush  
+bb=reshape(vwc2,mperday,nday);  %vwc2 10cm Under Bush
+ccc=reshape(vwc3,mperday,nday); %vwc3 20cm Under Bush
+
+% % ========= bare soil =============
+rr=reshape(t6,mperday,nday);    %T6 02cm Bare soil
+qq=reshape(t5,mperday,nday);    %T5 05cm Bare soil
+pp=reshape(t4,mperday,nday);    %T4 10cm Bare soil
+ss=reshape(t7,mperday,nday);    %T7 20 cm Bare soil 
+
+gg=reshape(vwc6,mperday,nday); % vwc6 02cm Bare soil
+ff=reshape(vwc5,mperday,nday); % vwc5_05cm Bare soil
+dd=reshape(vwc4,mperday,nday); % vwc4 10cm Bare soil
+hh=reshape(vwc7,mperday,nday); % vwc7 20 cm Bare soil
+
+
+%  % ========= Soil temperature and volumetric water content =============
+figure 
+set(gcf,'NumberTitle', 'off', 'Name', 'Under mesquite')
+subplot(4,1,1);
+pcolor(D,t,mm); shading flat; hold on; 
+[c,h] = contour(D,t,mm,'linewidth',1); hold on;  colormap jet
+Z=colorbar;  caxis([-25 50]);
+set(get(Z,'ylabel'),'string','Soil Temp 2cm [°C]','Fontsize',14) % sets the ylabel property of the handle t.
+set(gca,'xtick',[],'ytick',[timeofday])
+title 'Under mesquite' 
+
+subplot(4,1,2);
+pcolor(D,t,oo);shading flat; hold on;
+[c,h] = contour(D,t,oo,'linewidth',1); hold on;  colormap jet
+Z=colorbar; caxis([-25 50]);
+set(get(Z,'ylabel'),'string','Soil Temp 05cm [°C]','Fontsize',14) % sets the ylabel property of the handle t.
+
+subplot(4,1,3);
+pcolor(D,t,tt); shading flat; hold on;
+[c,h] = contour(D,t,tt,'linewidth',1); colormap jet; hold on;  
+Z=colorbar; caxis([-25 50]);
+set(get(Z,'ylabel'),'string','Soil Temp 10cm [°C]','Fontsize',10) % sets the ylabel property of the handle t.
+set(gca,'xtick',[],'ytick',[timeofday])
+
+subplot(4,1,4);pcolor(D,t,nn);shading flat; hold on;
+[c,h] = contour(D,t,nn,'linewidth',1); hold on; colormap jet
+Z=colorbar; caxis([-25 50]);
+set(get(Z,'ylabel'),'string','SoilTemp 20cm [°C]','Fontsize',14) % sets the ylabel property of the handle t.
+set(gca,'xtick',[],'ytick',[timeofday])
+set(gca,'XTickLabel',days) 
+set(gca,'YTickLabel',timeofday) 
+xlabel('Day of year','fontsize',14,'fontweight','b','color','k');
+ylabel('Time of day','fontsize',14,'fontweight','b','color','k')
+
+
+figure 
+set(gcf,'NumberTitle', 'off', 'Name', 'Bare soil')
+subplot(4,1,1);pcolor(D,t,rr); shading flat; hold on; 
+[c,h] = contour(D,t,rr,'linewidth',1); hold on; colormap jet
+Z=colorbar;  caxis([-25 50]);
+set(get(Z,'ylabel'),'string','Soil Temp 2cm [°C]','Fontsize',14) % sets the ylabel property of the handle t.
+set(gca,'xtick',[],'ytick',[timeofday])
+title 'Bare Soil'
+
+subplot(4,1,2);
+pcolor(D,t,ss);shading flat; hold on;
+[c,h] = contour(D,t,ss,'linewidth',1); hold on; colormap jet
+Z=colorbar; caxis([-25 50]);
+set(get(Z,'ylabel'),'string','Soil Temp 05cm [°C]','Fontsize',14) % sets the ylabel property of the handle t.
+set(gca,'XTickLabel',days) 
+set(gca,'YTickLabel',timeofday) 
+set(gca,'xtick',[],'ytick',[timeofday])
+
+subplot(4,1,3);
+pcolor(D,t,qq); shading flat;hold on;
+[c,h] = contour(D,t,qq,'linewidth',1); hold on; 
+Z=colorbar;  caxis([-25 50]); colormap jet
+set(get(Z,'ylabel'),'string','Soil_Temp 10cm [°C]','Fontsize',14) % sets the ylabel property of the handle t.
+set(gca,'xtick',[],'ytick',[timeofday])
+
+subplot(4,1,4);
+pcolor(D,t,pp);shading flat; hold on;
+[c,h] = contour(D,t,pp,'linewidth',1); hold on;  colormap jet
+Z=colorbar; caxis([-25 50]);
+set(get(Z,'ylabel'),'string','Soil Temp 20cm [°C]','Fontsize',14) % sets the ylabel property of the handle t.
+set(gca,'xtick',[],'ytick',[timeofday])
+set(gca,'XTickLabel',days) 
+set(gca,'YTickLabel',timeofday) 
+xlabel('Day of year','fontsize',14,'fontweight','b','color','k');
+ylabel('Time of day','fontsize',14,'fontweight','b','color','k')
+
+ 
+figure 
+set(gcf,'NumberTitle', 'off', 'Name', 'Under mesquite')
+subplot(4,1,1);
+pcolor(D,t,aa);shading flat; hold on;
+Z=colorbar; caxis([0 0.2]);
+[c,h] = contour(D,t,aa,'linewidth',1); hold on;  colormap jet
+set(get(Z,'ylabel'),'string','-02cm [%]','Fontsize',14) 
+set(gca,'xtick',[],'ytick',[timeofday])
+
+
+subplot(4,1,2);pcolor(D,t,ccc);shading flat; hold on;
+[c,h] = contour(D,t,ccc,'linewidth',1); hold on; colormap jet
+Z=colorbar; caxis([0 0.2]);
+set(get(Z,'ylabel'),'string','-05cm ','Fontsize',14) 
+set(gca,'xtick',[],'ytick',[timeofday])
+
+subplot(4,1,3);pcolor(D,t,ll); shading flat;hold on;
+[c,h] = contour(D,t,ll,'linewidth',1); hold on; colormap jet
+Z=colorbar; caxis([0 0.2]);
+set(get(Z,'ylabel'),'string','-10cm [%]','Fontsize',14) % sets the ylabel property of the handle t.
+set(gca,'xtick',[],'ytick',[timeofday])
+
+subplot(4,1,4);pcolor(D,t,bb); shading flat; hold on; 
+[c,h] = contour(D,t,bb,'linewidth',1); hold on;  colormap jet
+Z=colorbar; caxis([0 0.2]);
+set(get(Z,'ylabel'),'string','-20cm [%]','Fontsize',14) % sets the ylabel property of the handle t.
+set(gca,'xtick',[],'ytick',[timeofday])
+set(gca,'XTickLabel',days) 
+set(gca,'YTickLabel',timeofday) 
+xlabel('Day of year','fontsize',14,'fontweight','b','color','k');
+ylabel('Time of day','fontsize',14,'fontweight','b','color','k')
+
+
+figure 
+set(gcf,'NumberTitle', 'off', 'Name', 'Bare soil')
+subplot(4,1,1);
+pcolor(D,t,dd); shading flat; hold on;
+[c,h] = contour(D,t,dd,'linewidth',1); hold on; colormap jet
+Z=colorbar; caxis([0 0.2]);
+set(get(Z,'ylabel'),'string','-02cm [%]','Fontsize',14) % sets the ylabel property of the handle t.
+set(gca,'xtick',[],'ytick',[timeofday])
+
+subplot(4,1,2);
+pcolor(D,t,ff); shading flat;hold on;
+[c,h] = contour(D,t,ff,'linewidth',1); hold on; colormap jet
+Z=colorbar; caxis([0 0.2]);
+set(get(Z,'ylabel'),'string','-05cm [%] ','Fontsize',14) % sets the ylabel property of the handle t.
+set(gca,'xtick',[],'ytick',[timeofday])
+
+subplot(4,1,3);
+pcolor(D,t,hh);shading flat; hold on;
+[c,h] = contour(D,t,hh,'linewidth',1); hold on;  colormap jet
+Z=colorbar; caxis([0 0.2]);
+set(get(Z,'ylabel'),'string','-10cm [%]','Fontsize',14) % sets the ylabel property of the handle t.
+set(gca,'XTickLabel',days) 
+set(gca,'YTickLabel',timeofday) 
+
+subplot(4,1,4);
+pcolor(D,t,gg); shading flat; hold on;
+[c,h] = contour(D,t,gg,'linewidth',1); hold on; colormap jet
+Z=colorbar; caxis([0 0.2]);
+set(get(Z,'ylabel'),'string','-20cm [%] ','Fontsize',14) % sets the ylabel property of the handle t.
+set(gca,'xtick',[],'ytick',[timeofday])
+title 'Bare Soil'
+xlabel('Day of year','fontsize',14,'fontweight','b','color','k');
+ylabel('Time of day','fontsize',14,'fontweight','b','color','k');
+ 
+%   ========= FLUXES =============
+ggg=reshape(H,mperday,nday);
+% hheee=reshape(SFC,mperday,nday);
+% hh=reshape(SH,mperday,nday);
+iii=reshape(LE,mperday,nday);
+% jjj=reshape(SLE,mperday,nday);
+nnn=reshape(CO2,mperday,nday);
+www=reshape(H2O,mperday,nday);
+xxx=reshape(RE,mperday,nday);
+yyy=reshape(GPP,mperday,nday);
+zzz=reshape(ZL,mperday,nday);
+ccc=reshape(NEE,mperday,nday);
+% ddd=reshape(FC,mperday,nday);
+% 
+%  Inpaiting
+% ggg=reshape(H)
+% iii=reshape(LE);
+% jjj=reshape(%SLE);
+% xxx=reshape(RE,mperday,nday);
+% yyy=reshape(GPP,mperday,nday);
+% ccc=reshape(NEE,mperday,nday);
+% 
+% Data=[ggg;iii;jjj;xxx;yyy;ccc];
+% save ThreeYrsFluxes Data
+
+% NEEi=GPP-RE;
+figure 
+set(gcf,'NumberTitle', 'off', 'Name', 'Fluxes')
+subplot(5,1,1); 
+subplot(5,1,1); 
+
+pcolor(D,t,iii); shading flat; hold on;
+[c,h] = contour(D,t,iii,'linewidth',2);hold on; colormap jet
+Z=colorbar;  caxis([0 300])
+set(get(Z,'ylabel'),'string','LE [W m^2/s]','Fontsize',14) % sets the ylabel property of the handle t.
+set(gca,'xtick',[],'ytick',[timeofday])
+ 
+  
+subplot(5,1,2);
+
+pcolor(D,t,ggg); shading flat;hold on;
+[c,h] = contour(D,t,ggg,'linewidth',1); hold on; colormap jet
+Z=colorbar;  caxis([0 500]);
+set(get(Z,'ylabel'),'string','H [W m^2/s]','Fontsize',14) % sets the ylabel property of the handle t.
+set(gca,'xtick',[],'ytick',[timeofday])
+ 
+subplot(5,1,3);
+pcolor(D,t,ccc);shading flat; hold on;
+[c,h] = contour(D,t,ccc,'linewidth',1); hold on; colormap jet
+Z=colorbar;  caxis([-3 3])
+set(get(Z,'ylabel'),'string','NEE [umol m^2/s]','Fontsize',14) % sets the ylabel property of the handle t.
+set(gca,'xtick',[],'ytick',[timeofday])
+ 
+subplot(5,1,4);pcolor(D,t,yyy);shading flat; hold on;
+[c,h] = contour(D,t,yyy,'linewidth',1); hold on;  colormap jet
+Z=colorbar;  caxis([0 3]);
+set(get(Z,'ylabel'),'string','GPP [umol m^2/s]','Fontsize',14) % sets the ylabel property of the handle t.
+set(gca,'xtick',[],'ytick',[timeofday])
+   
+subplot(5,1,5); 
+pcolor(D,t,xxx);shading flat; hold on; Z=colorbar;  caxis([0 3]);
+[c,h] = contour(D,t,xxx,'linewidth',1); hold on;  colormap jet
+set(get(Z,'ylabel'),'string','Reco [umol m^2/s]','Fontsize',10) % sets the ylabel property of the handle t.
+set(gca,'XTickLabel',days) 
+set(gca,'YTickLabel',timeofday) 
+ylabel('Time of day','fontsize',14,'fontweight','b','color','k');
+xlabel('Day of year','fontsize',14,'fontweight','b','color','k');
+
+
+% figure
+% set(gcf,'NumberTitle', 'off', 'Name', 'Battery Voltage')
+% % subplot(2,1,1);
+% plot(batt_volt_avg); hold on; title 'Battery Voltage'; grid on;
+% % subplot(2,1,2);pcolor(D,t,ttt);shading interp; hold on;[c,h] = contour(D,t,ttt,'k--'); 
+% pr=reshape(UST,mperday,nday);
+% aaa=reshape(TA,mperday,nday);
+% bbb=reshape(WD,mperday,nday);
+% fff=reshape(UST,mperday,nday);
+
+
+%   ========= Precipitation =============
+p=reshape(precip_tot,mperday,nday);
+figure
+subplot(2,1,1);
+pcolor(D,t,p);shading flat; hold on;
+[c,h] = contour(D,t,p); hold on;  colormap jet 
+Z=colorbar;  caxis([0 50]);
+set(get(Z,'ylabel'),'string','Precip [mm]','Fontsize',14) % sets the ylabel property of the handle t.
+set(gca,'XTickLabel',days) 
+set(gca,'YTickLabel',timeofday) 
+ylabel('Time of day','fontsize',14,'fontweight','b','color','k')
+xlabel('Day of year','fontsize',14,'fontweight','b','color','k');
+% ttt=reshape(batt_volt_avg,mperday,nday); 
+
+subplot(2,1,2);
+plot(D,p,'k','LineWidth',2); grid on
+set(gca,'XTickLabel',days) 
+ylabel('Time of day','fontsize',20,'fontweight','b','color','k')
+xlabel('Day of year','fontsize',20,'fontweight','b','color','k');
+
+%        ========== Daily/Monthly/Yearly values
+% % Clean matrix, Gapfilled
+%       A=[YEAR,DOY,TIME,ts_mean,press_avg, atm_press_mean,	t_hmp_mean,	rh_hmp_mean, lws_1, lws_2, precip_tot,...
+%     wind_speed,wind_dir,panel_temp_avg, batt_volt_avg,NetSW, NetLW, UpTot, DownTot, Rn_nr_CNR1,...
+%     Rn_nr_CNR2,	Rn_nr_CNR4, Rn_nr_Corrected,albedo_Avg,	par_avg,hfp01_1,hfp01_2,hfp01_3,hfp01_4,...
+%     vwc1,vwc2,vwc3,	vwc4,vwc5,vwc6,	vwc7,vwc8, t1, t2, t3,	t4, t5,	t6,	t7, t8,UST,TA,WD,...
+%     WS,RH,PRESS, VPD,NEE,FC,SFC,H,SH,LE,SLE,CO2, H2O, RE,GPP, ZL];
+
+% FILTERED DATA WITH GAPS (FROM QualityAssuranceV1)
+% D=[YEAR,DOY,hour,co2_flux_filtered, h2o_flux_filtered, H_filtered, LE_filtered, Tair, atm_press_mean,rH, lws_1, lws_2, precip_tot,...
+%     wind_speed,wind_dir,Rg,	par_avg,hfp01_1,hfp01_2,hfp01_3,hfp01_4,...
+%     vwc1,vwc2,vwc3,	vwc4,vwc5,vwc6,	vwc7,vwc8, t1, t2, t3,	t4, t5,	t6,	t7, t8];
+% A=D;
+
+% % % Clean matrix, Gapfilled (Runs with all the data)
+%       A=[YEAR,DOY,TIME,ts_mean,press_avg, atm_press_mean,	t_hmp_mean,	rh_hmp_mean, lws_1, lws_2, precip_tot,...
+%     wind_speed,wind_dir,panel_temp_avg, batt_volt_avg,NetSW, NetLW, UpTot, DownTot, Rn_nr_CNR1,...
+%     Rn_nr_CNR2,	Rn_nr_CNR4, Rn_nr_Corrected,albedo_Avg,	par_avg,hfp01_1,hfp01_2,hfp01_3,hfp01_4,...
+%     vwc1,vwc2,vwc3,	vwc4,vwc5,vwc6,	vwc7,vwc8, t1, t2, t3,	t4, t5,	t6,	t7, t8,UST,TA,WD,...
+%     WS,RH,PRESS, VPD,nep,FC,SFC,H,SH,LE,SLE,CO2, H2O, reco,gep, ZL];
+
+% Runs with data after 091913
+% % Clean matrix (QualityAssuranceV1.m), Gapfilled (Jena tool with Tair) (NEE, GPP and R, stil as umo/m^2/s)
+%       A=[YEAR,DOY,TIME,t_hmp_mean,rh_hmp_mean, lws_1, lws_2, precip_tot,...
+%     wind_speed,wind_dir, Rn_nr_Corrected,par_avg,hfp01_1,hfp01_2,hfp01_3,hfp01_4,...
+%     vwc1,vwc2,vwc3,	vwc4,vwc5,vwc6,	vwc7,vwc8, t1, t2, t3,	t4, t5,	t6,	t7, t8,...
+%     VPD,NEE,H,LE,CO2,H2O, RE, GPP,ZL];
+% 
+%       A=[YEAR,DOY,TIME,ts_mean,press_avg, atm_press_mean, hmp_mean,	rh_hmp_mean, lws_1, lws_2, precip_tot,...
+%     wind_speed,wind_dir,panel_temp_avg, batt_volt_avg,NetSW, NetLW, UpTot, DownTot, Rn_nr_CNR1,...
+%     Rn_nr_CNR2,	Rn_nr_CNR4, Rn_nr_Corrected,albedo_Avg,	par_avg,hfp01_1,hfp01_2,hfp01_3,hfp01_4,...
+%     vwc1,vwc2,vwc3,	vwc4,vwc5,vwc6,	vwc7,vwc8, t1, t2, t3,	t4, t5,	t6,	t7, t8,UST,TA,WD,...
+%     WS,RH,PRESS, VPD,NEE,FC,SFC,H,SH,LE,SLE,CO2, H2O, RE,GPP, ZL];
+
+% ================ MATRIX FOR REGRESSION TREES ============
+
+% Filtered data and gap filled with JENA tool (no further cleaning was done)
+% This file is only used as input to the regression trees
+% The matrix above need to be saved to generate the annual trends figures
+
+  D=[YEAR,DOY,TIME,NEE, GPP, RE, H, LE, t_hmp_mean, atm_press_mean, VPD, precip_tot,...
+      wind_speed, wind_dir, Rn_nr_Corrected,par_avg,hfp01_1,hfp01_2,hfp01_3,hfp01_4,...
+     vwc1,vwc2,vwc3,vwc4,vwc5,vwc6,	vwc7,vwc8, t1, t2, t3,	t4, t5,	t6,	t7, t8];
+ A=D;
+[mean_A]= DailyData(A); 
+[sum_A]=DailyData(A);
+[week_A]= WeeklyData(A);
+[Summonth_A]= MonthlyData(A);
+[SumYear_A]= YearlyData(A);
