@@ -1,0 +1,15 @@
+
+% time
+function time=Construct_time(increment,nday)
+% Constructs a periodic vector containing time corresponding 
+%to its measurement frecuency
+% e.g., for 48 measurements per day (every 30min),
+% and 365 dias,
+% vect = [1,..,1,2....2,...,...,365,...365];
+% where each block k,...,k is of length 48.
+x1=(0.0:0.5:23.5)';
+time=[];
+for i=1:nday 
+     time=[time;x1];
+ end
+ 
